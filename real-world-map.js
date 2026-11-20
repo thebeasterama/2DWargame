@@ -25,7 +25,8 @@
   const zoomByScale = { city: 13, state: 6, country: 5, world: 3 };
   const mapElement = document.getElementById('worldMap');
   if (!mapElement || !window.L) {
-    console.warn('Real-world map tiles unavailable: Leaflet could not be loaded.');
+    if (mapElement) mapElement.classList.add('map-fallback');
+    console.warn('Real-world tiles unavailable; showing the built-in terrain fallback.');
     return;
   }
 
@@ -41,10 +42,21 @@
     tap: false
   }).setView(mapLocations.city[0].center, zoomByScale.city);
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  let loadedTiles = 0;
+  const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-  }).addTo(map);
+  });
+  tiles.on('tileload', () => {
+    loadedTiles++;
+    mapElement.classList.remove('map-fallback');
+  });
+  tiles.on('tileerror', () => {
+    if (loadedTiles === 0) mapElement.classList.add('map-fallback');
+  });
+  tiles.addTo(map);
+  // Avoid a blank map while the first network tiles are loading.
+  mapElement.classList.add('map-fallback');
 
   function updateMap() {
     const scaleSelect = document.getElementById('mapScale');
@@ -66,8 +78,10 @@
   document.getElementById('startGame')?.addEventListener('click', () => {
     requestAnimationFrame(() => { map.invalidateSize(); updateMap(); });
   });
+  window.addEventListener('resize', () => map.invalidateSize());
 
-  // Keep the basemap visible beneath the game units, obstacles, and effects.
+  // A transparent canvas lets map tiles show through. This function intentionally
+  // replaces the opaque terrain painter in game.js while retaining tactical cover.
   window.drawTerrain = function drawRealWorldOverlay() {
     ctx.clearRect(0, 0, W, H);
     if (naval) {
