@@ -1,0 +1,92 @@
+:root {
+  --ink: #d8d0bd;
+  --muted: #969184;
+  --panel: #1d211e;
+  --line: #42473f;
+  --green: #8da25c;
+  --orange: #d49a55;
+  --red: #b85d4a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  background:
+    linear-gradient(rgba(15,18,16,.86), rgba(15,18,16,.86)),
+    repeating-linear-gradient(45deg, #232720 0 2px, #1a1d19 2px 5px);
+  font-family: "Arial Narrow", Impact, sans-serif;
+  letter-spacing: .08em;
+}
+
+.game-shell {
+  width: min(1500px, 100vw);
+  min-height: 100vh;
+  padding: 18px 24px 12px;
+  background: #171b18;
+  border-inline: 1px solid #30352f;
+}
+
+.topbar, footer, .game-layout { display: flex; }
+.topbar {
+  height: 84px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--line);
+}
+.eyebrow { margin: 0 0 2px; color: var(--muted); font-size: 11px; }
+h1 { margin: 0; font-size: clamp(32px, 4vw, 54px); line-height: .9; letter-spacing: .12em; }
+.round-panel { display: grid; grid-template-columns: auto 52px; align-items: center; gap: 12px; }
+.round-panel span { color: var(--muted); font-size: 12px; }
+.round-panel strong { border: 1px solid var(--line); padding: 8px 12px; text-align: center; font-size: 26px; }
+
+.game-layout { height: calc(100vh - 150px); min-height: 600px; }
+.panel { width: 210px; flex: 0 0 210px; padding: 18px 14px; border-bottom: 2px solid var(--line); }
+.left-panel { border-right: 2px solid var(--line); }
+.right-panel { border-left: 2px solid var(--line); }
+.panel h2 { margin: 0 0 16px; font-size: 12px; color: var(--muted); }
+.battlefield-wrap { position: relative; flex: 1; min-width: 0; display: grid; place-items: center; overflow: hidden; }
+canvas { width: 100%; height: 100%; object-fit: contain; background: #7f826c; image-rendering: auto; }
+
+.roster { display: grid; gap: 8px; }
+.unit-card { display: grid; grid-template-columns: 42px 1fr; gap: 8px; align-items: center; padding: 8px; border: 1px solid #3a4037; background: #21251f; cursor: pointer; }
+.unit-card.active { border-color: var(--green); background: #2b3126; }
+.unit-card.dead { opacity: .35; filter: grayscale(1); pointer-events: none; }
+.unit-icon { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid #68705d; color: #dfe4cf; }
+.unit-card strong { display: block; font-size: 12px; }
+.unit-card small { color: var(--muted); }
+.hp-track { height: 3px; margin-top: 5px; background: #111; }
+.hp-fill { height: 100%; background: var(--green); }
+.controls { position: absolute; bottom: 32px; display: grid; gap: 8px; color: var(--muted); font-size: 9px; }
+kbd { display: inline-block; min-width: 38px; margin-right: 6px; padding: 4px; border: 1px solid var(--line); color: var(--ink); text-align: center; }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); }
+.stat-grid div { min-height: 76px; padding: 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat-grid div:nth-child(2n) { border-right: 0; }
+.stat-grid div:nth-child(n+3) { border-bottom: 0; }
+.stat-grid span, .objective span { display: block; margin-bottom: 8px; color: var(--muted); font-size: 9px; }
+.stat-grid strong { font-size: 15px; }
+.objective { margin-top: 18px; padding: 12px; border-left: 3px solid var(--orange); background: #20231e; }
+.objective p { margin: 0; font-size: 11px; line-height: 1.5; }
+
+footer { height: 54px; align-items: center; border-top: 2px solid var(--line); }
+.score { width: 210px; display: flex; align-items: center; gap: 12px; }
+.score span { color: var(--muted); font-size: 10px; }
+.score strong { font-size: 24px; color: var(--green); }
+.score.enemy { justify-content: flex-end; }
+.score.enemy strong { color: var(--red); }
+.wave { flex: 1; text-align: center; color: var(--orange); font-size: 11px; }
+
+.banner { position: absolute; inset: 0; display: grid; place-items: center; z-index: 5; background: rgba(16,18,15,.65); font-size: clamp(32px, 6vw, 72px); text-shadow: 0 4px 0 #111; }
+.hidden { display: none; }
+
+@media (max-width: 900px) {
+  .game-shell { padding-inline: 8px; }
+  .panel { width: 145px; flex-basis: 145px; }
+  .right-panel { display: none; }
+  .controls { display: none; }
+}

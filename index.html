@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iron Front</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">TACTICAL COMMAND</p>
+        <h1>IRON FRONT</h1>
+      </div>
+      <div class="round-panel">
+        <span>ROUND</span>
+        <strong id="round">1</strong>
+      </div>
+    </header>
+
+    <section class="game-layout">
+      <aside class="panel left-panel">
+        <h2>UNIT ROSTER</h2>
+        <div id="roster" class="roster"></div>
+        <div class="controls">
+          <span><kbd>WASD</kbd> MOVE</span>
+          <span><kbd>CLICK</kbd> TARGET</span>
+          <span><kbd>SPACE</kbd> ATTACK</span>
+        </div>
+      </aside>
+
+      <div class="battlefield-wrap">
+        <canvas id="game" width="960" height="540" aria-label="Iron Front battlefield"></canvas>
+        <div id="banner" class="banner hidden"></div>
+      </div>
+
+      <aside class="panel right-panel">
+        <h2>FIELD DATA</h2>
+        <div class="stat-grid">
+          <div><span>UNIT</span><strong id="activeName">—</strong></div>
+          <div><span>HEALTH</span><strong id="health">—</strong></div>
+          <div><span>AMMO</span><strong id="ammo">—</strong></div>
+          <div><span>STATUS</span><strong id="status">READY</strong></div>
+        </div>
+        <div class="objective">
+          <span>OBJECTIVE</span>
+          <p id="objective">ELIMINATE ALL HOSTILES</p>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div class="score"><span>ALLIES</span><strong id="allies">3</strong></div>
+      <div class="wave"><span id="phase">DEPLOYMENT PHASE</span></div>
+      <div class="score enemy"><span>HOSTILES</span><strong id="enemies">5</strong></div>
+    </footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
