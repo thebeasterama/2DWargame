@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#171b18" />
   <title>Iron Front — Global Command</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="maps.css" />
 </head>
 <body>
   <main class="game-shell">
@@ -16,10 +18,8 @@
         <p class="menu-subtitle" data-i18n="menuSubtitle">Choose your settings and deploy to the front.</p>
         <label class="menu-label" for="difficulty" data-i18n="difficultyLabel">DIFFICULTY</label>
         <select id="difficulty" class="menu-select">
-          <option value="easy" data-i18n="easy">Easy</option>
-          <option value="medium" selected data-i18n="medium">Medium</option>
-          <option value="difficult" data-i18n="difficult">Difficult</option>
-          <option value="impossible" data-i18n="impossible">Impossible</option>
+          <option value="easy" data-i18n="easy">Easy</option><option value="medium" selected data-i18n="medium">Medium</option>
+          <option value="difficult" data-i18n="difficult">Difficult</option><option value="impossible" data-i18n="impossible">Impossible</option>
         </select>
         <label class="menu-label" for="language" data-i18n="languageLabel">LANGUAGE</label>
         <select id="language" class="menu-select" aria-label="Language">
@@ -33,7 +33,10 @@
     <div id="gameScreen" class="game-screen hidden">
       <header class="topbar">
         <div><p class="eyebrow" data-i18n="command">GLOBAL TACTICAL COMMAND</p><h1>IRON FRONT</h1></div>
-        <div class="top-actions"><label class="language-inline"><span data-i18n="languageLabel">LANGUAGE</span><select id="inGameLanguage" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option></select></label><div class="round-panel"><span data-i18n="round">ROUND</span><strong id="round">1</strong></div></div>
+        <div class="top-actions">
+          <label class="language-inline"><span data-i18n="languageLabel">LANGUAGE</span><select id="inGameLanguage" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option></select></label>
+          <div class="round-panel"><span data-i18n="round">ROUND</span><strong id="round">1</strong></div>
+        </div>
       </header>
       <section class="campaign-bar" aria-label="Campaign setup">
         <label class="setup-field"><span data-i18n="mapScale">MAP SCALE</span><select id="mapScale" aria-label="Map scale"><option value="city">City</option><option value="state">State</option><option value="country">Country</option><option value="world">World</option></select></label>
@@ -43,19 +46,28 @@
         <button id="deploy" class="deploy-button" type="button" data-i18n="deploy">DEPLOY</button>
       </section>
       <section class="game-layout">
-        <aside class="panel left-panel"><h2 id="rosterTitle" data-i18n="alliedRoster">ALLIED ROSTER</h2><div id="roster" class="roster"></div>
+        <aside class="panel left-panel">
+          <h2 id="rosterTitle" data-i18n="alliedRoster">ALLIED ROSTER</h2><div id="roster" class="roster"></div>
           <div class="controls"><span><kbd>WASD</kbd> <span data-i18n="move">MOVE</span></span><span><kbd>1–3</kbd> <span data-i18n="selectUnit">SELECT UNIT</span></span><span><kbd>CLICK</kbd> <span data-i18n="target">TARGET</span></span><span><kbd>SPACE</kbd> <span data-i18n="attack">ATTACK</span></span></div>
         </aside>
-        <div class="battlefield-wrap"><canvas id="game" width="960" height="540" aria-label="Tactical battlefield"></canvas><div id="banner" class="banner hidden"></div></div>
-        <aside class="panel right-panel"><h2 data-i18n="theaterIntel">THEATER INTELLIGENCE</h2>
-          <div class="theater-card"><span id="theaterScale">CITY OPERATION</span><strong id="theaterName">Old Town</strong><small id="theaterRegion">Urban district</small></div>
+        <div class="battlefield-wrap">
+          <div id="worldMap" aria-label="OpenStreetMap real-world map"></div>
+          <canvas id="game" width="960" height="540" aria-label="Tactical battlefield overlay"></canvas>
+          <div id="banner" class="banner hidden"></div>
+        </div>
+        <aside class="panel right-panel">
+          <h2 data-i18n="theaterIntel">THEATER INTELLIGENCE</h2>
+          <div class="theater-card"><span id="theaterScale">CITY OPERATION</span><strong id="theaterName">Paris, France</strong><small id="theaterRegion">OpenStreetMap</small></div>
           <div class="stat-grid"><div><span data-i18n="unit">UNIT</span><strong id="activeName">—</strong></div><div><span data-i18n="health">HEALTH</span><strong id="health">—</strong></div><div><span data-i18n="ammo">AMMO</span><strong id="ammo">—</strong></div><div><span data-i18n="status">STATUS</span><strong id="status">READY</strong></div></div>
-          <div class="objective"><span data-i18n="missionObjective">MISSION OBJECTIVE</span><p id="objective">ELIMINATE ALL HOSTILES</p></div><div class="alliance-note"><span data-i18n="commandLabel">COMMAND</span><p id="allianceNote">Allied Coalition</p></div>
+          <div class="objective"><span data-i18n="missionObjective">MISSION OBJECTIVE</span><p id="objective">ELIMINATE ALL HOSTILES</p></div>
+          <div class="alliance-note"><span data-i18n="commandLabel">COMMAND</span><p id="allianceNote">Allied Coalition</p></div>
         </aside>
       </section>
       <footer><div class="score"><span id="teamLabel">ALLIES</span><strong id="allies">3</strong></div><div class="wave"><span id="phase">DEPLOYMENT PHASE</span></div><div class="score enemy"><span data-i18n="hostiles">HOSTILES</span><strong id="enemies">5</strong></div></footer>
     </div>
   </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="game.js"></script>
+  <script src="real-world-map.js"></script>
 </body>
 </html>
