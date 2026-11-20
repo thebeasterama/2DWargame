@@ -1,18 +1,18 @@
 # Iron Front — Global Command
 
-A self-contained tactical 2D browser wargame featuring selectable alliances, city/state/country/world campaign theaters, and an optional naval invasion scenario.
+A self-contained tactical 2D browser wargame with alliances, campaign map scales, and optional naval invasions.
 
 ## Run
 
 Open `index.html` in a browser, or serve this folder with `python3 -m http.server 8080` and visit `http://localhost:8080`.
 
+## Main menu
+
+Choose Easy, Medium, Difficult, or Impossible before starting. Difficulty changes the number, health, damage, and attack pace of enemy units. Choose English, Spanish, or French in the menu or from the in-game language selector; the preference is saved in the browser.
+
 ## Campaign setup
 
-- Choose a **map scale**: City, State, Country, or World.
-- Pick a theater for the selected scale.
-- Choose an alliance: Allied Coalition, Northern Pact, or Independent Forces.
-- Enable **Naval invasion** to launch a beach landing operation.
-- Press **Deploy** to start or restart the battle with the selected setup.
+Choose a City, State, Country, or World map scale, select a theater and alliance, and optionally enable Naval invasion. Press **Deploy** to start a new battle with the selected setup.
 
 ## Controls
 
