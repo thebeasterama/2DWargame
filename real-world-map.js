@@ -24,9 +24,16 @@
   };
   const zoomByScale = { city: 13, state: 6, country: 5, world: 3 };
   const mapElement = document.getElementById('worldMap');
+  const statusElement = document.getElementById('mapStatus');
+  const scaleSelect = document.getElementById('mapScale');
+  const locationSelect = document.getElementById('location');
+
+  function showFallback(message) {
+    mapElement?.classList.add('map-fallback');
+    if (statusElement) statusElement.textContent = message;
+  }
   if (!mapElement || !window.L) {
-    if (mapElement) mapElement.classList.add('map-fallback');
-    console.warn('Real-world tiles unavailable; showing the built-in terrain fallback.');
+    showFallback('Map tiles unavailable — tactical terrain remains playable.');
     return;
   }
 
@@ -38,69 +45,77 @@
     doubleClickZoom: false,
     scrollWheelZoom: false,
     boxZoom: false,
-    keyboard: false,
-    tap: false
+    keyboard: false
   }).setView(mapLocations.city[0].center, zoomByScale.city);
 
-  let loadedTiles = 0;
-  const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  // Keep the endpoint configurable. Normal browser caching is left enabled and
+  // no tile prefetch, bulk download, or offline tile storage is performed.
+  const tileUrl = window.IRON_FRONT_TILE_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  let loadedVisibleTiles = 0;
+  const tiles = L.tileLayer(tileUrl, {
     maxZoom: 19,
+    updateWhenIdle: true,
+    keepBuffer: 2,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
   });
   tiles.on('tileload', () => {
-    loadedTiles++;
+    loadedVisibleTiles++;
     mapElement.classList.remove('map-fallback');
+    if (statusElement) statusElement.textContent = 'REAL-WORLD MAP';
   });
   tiles.on('tileerror', () => {
-    if (loadedTiles === 0) mapElement.classList.add('map-fallback');
+    if (!loadedVisibleTiles) showFallback('Map tiles unavailable — check connection or use another tile provider.');
   });
   tiles.addTo(map);
-  // Avoid a blank map while the first network tiles are loading.
   mapElement.classList.add('map-fallback');
 
+  function populateLocations() {
+    if (!scaleSelect || !locationSelect) return;
+    const places = mapLocations[scaleSelect.value] || mapLocations.city;
+    locationSelect.replaceChildren(...places.map((place, index) => {
+      const option = document.createElement('option');
+      option.value = String(index);
+      option.textContent = place.name;
+      return option;
+    }));
+    updateMap();
+  }
   function updateMap() {
-    const scaleSelect = document.getElementById('mapScale');
-    const locationSelect = document.getElementById('location');
     if (!scaleSelect || !locationSelect) return;
     const scale = scaleSelect.value;
-    const index = Number(locationSelect.value) || 0;
-    const place = (mapLocations[scale] || mapLocations.city)[index] || mapLocations.city[0];
+    const places = mapLocations[scale] || mapLocations.city;
+    const place = places[Number(locationSelect.value) || 0] || places[0];
     map.setView(place.center, zoomByScale[scale] || zoomByScale.city, { animate: false });
     const name = document.getElementById('theaterName');
     const region = document.getElementById('theaterRegion');
     if (name) name.textContent = place.name;
-    if (region) region.textContent = `${place.region} · © OpenStreetMap`;
+    if (region) region.textContent = place.region;
   }
-
-  document.getElementById('mapScale')?.addEventListener('change', updateMap);
-  document.getElementById('location')?.addEventListener('change', updateMap);
-  document.getElementById('deploy')?.addEventListener('click', updateMap);
-  document.getElementById('startGame')?.addEventListener('click', () => {
-    requestAnimationFrame(() => { map.invalidateSize(); updateMap(); });
-  });
+  scaleSelect?.addEventListener('change', populateLocations);
+  locationSelect?.addEventListener('change', updateMap);
   window.addEventListener('resize', () => map.invalidateSize());
+  populateLocations();
 
-  // A transparent canvas lets map tiles show through. This function intentionally
-  // replaces the opaque terrain painter in game.js while retaining tactical cover.
-  window.drawTerrain = function drawRealWorldOverlay() {
+  // Keep the map visible under the tactical overlay instead of repainting an
+  // opaque flat canvas over the tiles. The explicit OSM credit is a sibling
+  // overlay in index.html, so it remains visible regardless of tile loading.
+  window.drawTerrain = function drawMapOverlay() {
     ctx.clearRect(0, 0, W, H);
-    if (naval) {
-      ctx.fillStyle = 'rgba(66,107,120,.72)';
+    if (typeof naval !== 'undefined' && naval) {
+      ctx.fillStyle = 'rgba(66,107,120,.58)';
       ctx.fillRect(0, 0, W, 88);
-      ctx.fillStyle = 'rgba(183,167,123,.86)';
+      ctx.fillStyle = 'rgba(183,167,123,.72)';
       ctx.fillRect(0, 88, W, 38);
     }
     ctx.strokeStyle = 'rgba(36,42,34,.10)';
     ctx.lineWidth = 1;
     for (let x = 0; x < W; x += 24) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
     for (let y = 0; y < H; y += 24) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-    obstacles.forEach(o => {
+    if (typeof obstacles !== 'undefined') obstacles.forEach(o => {
       ctx.fillStyle = 'rgba(54,58,48,.84)';
       ctx.fillRect(o.x, o.y, o.w, o.h);
       ctx.strokeStyle = 'rgba(235,229,205,.72)';
       ctx.strokeRect(o.x + 3, o.y + 3, o.w - 6, o.h - 6);
     });
   };
-
-  updateMap();
 })();

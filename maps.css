@@ -4,9 +4,7 @@
   z-index: 0;
   overflow: hidden;
   background: #89937c;
-  pointer-events: none;
 }
-
 .battlefield-wrap { position: relative; isolation: isolate; }
 .battlefield-wrap canvas {
   position: absolute;
@@ -15,61 +13,66 @@
   width: 100%;
   height: 100%;
   background: transparent !important;
-  pointer-events: auto;
 }
-.battlefield-wrap .banner { z-index: 3; }
+.battlefield-wrap .banner { z-index: 4; }
 
-/* The tactical interface keeps its condensed field-manual look even when
-   the browser has no locally installed condensed font. */
-body, button, select, input, .game-shell, .menu-card, .panel, footer,
-.campaign-bar, .topbar, .unit-card, .banner {
+/* The tactical UI intentionally uses a condensed field-manual type stack. */
+body, button, select, input, .game-shell, .panel, footer, .map-toolbar,
+.topbar, .unit-card, .banner {
   font-family: Impact, Haettenschweiler, "Arial Narrow", "Franklin Gothic Medium", sans-serif !important;
   letter-spacing: .08em;
 }
-.menu-subtitle, .menu-hint, .theater-card small, .objective p, .alliance-note p {
-  font-family: "Arial Narrow", "Franklin Gothic Medium", Arial, sans-serif !important;
-  letter-spacing: .04em;
+button, select, label { cursor: pointer; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid #d49a55; outline-offset: 2px; }
+
+/* Persistent, high-contrast attribution sits above both the map and canvas. */
+.tile-credit {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  z-index: 5;
+  display: block;
+  padding: 3px 6px;
+  color: #17628c;
+  background: rgba(255,255,255,.92);
+  border-radius: 2px;
+  font: 11px/1.35 Arial, sans-serif;
+  letter-spacing: 0;
+  text-decoration: underline;
+  pointer-events: auto;
 }
-button, select, label, .unit-card { cursor: pointer; }
-button:focus-visible, select:focus-visible, input:focus-visible {
-  outline: 2px solid #d49a55;
-  outline-offset: 2px;
-}
+.tile-credit:hover { background: #fff; }
 #worldMap .leaflet-control-attribution {
   z-index: 4;
   font: 10px/1.3 Arial, sans-serif;
   letter-spacing: 0;
   color: #333;
   background: rgba(255,255,255,.88);
-  pointer-events: auto;
-}
-#worldMap .leaflet-control-attribution a { color: #17628c; }
-#worldMap .leaflet-tile { filter: saturate(.82) contrast(1.04) brightness(.9); }
-
-/* Visible offline fallback: a textured topographic-style field with roads. */
-#worldMap.map-fallback {
-  background-color: #9aa187;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='300' viewBox='0 0 480 300'%3E%3Crect width='480' height='300' fill='%239aa187'/%3E%3Cpath d='M-20 240 Q70 205 125 228 T250 210 T390 223 T510 195' fill='none' stroke='%237c896f' stroke-width='34'/%3E%3Cpath d='M-20 240 Q70 205 125 228 T250 210 T390 223 T510 195' fill='none' stroke='%23c8c0a0' stroke-width='3'/%3E%3Cpath d='M65 -20 Q110 60 180 130 T265 320 M360 -20 Q340 80 385 140 T500 250' fill='none' stroke='%23d2c7a6' stroke-width='7'/%3E%3Cpath d='M65 -20 Q110 60 180 130 T265 320 M360 -20 Q340 80 385 140 T500 250' fill='none' stroke='%23eee5c8' stroke-width='2'/%3E%3Cg fill='%23778868' opacity='.8'%3E%3Cpath d='M25 35l18-8 12 12-10 15-19-4zM310 38l22-9 13 14-9 16-23-5zM285 245l19-11 17 10-5 18-25 3zM105 153l15-9 14 12-7 14-20-2z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23b2b99b' stroke-width='2' opacity='.8'%3E%3Cpath d='M-20 75Q45 50 95 78T200 70T300 78T500 54M-20 94Q45 69 95 97T200 89T300 97T500 73M220 0Q195 55 225 100T215 200T245 320M235 0Q210 55 240 100T230 200T260 320'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 480px 300px;
-}
-#worldMap.map-fallback::after {
-  content: "REAL-WORLD MAP UNAVAILABLE · CHECK INTERNET CONNECTION";
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  z-index: 500;
-  transform: translateX(-50%);
-  max-width: calc(100% - 24px);
-  padding: 6px 9px;
-  color: #f5f0df;
-  background: rgba(27,32,27,.82);
-  border: 1px solid rgba(230,220,190,.55);
-  font: 10px/1.3 Arial, sans-serif;
-  letter-spacing: .08em;
-  text-align: center;
   pointer-events: none;
 }
+#worldMap .leaflet-tile { filter: none; }
+
+/* Built-in topographic texture is shown while tiles are loading or offline. */
+#worldMap.map-fallback {
+  background-color: #9aa187;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='300' viewBox='0 0 480 300'%3E%3Crect width='480' height='300' fill='%239aa187'/%3E%3Cpath d='M-20 240 Q70 205 125 228 T250 210 T390 223 T510 195' fill='none' stroke='%237c896f' stroke-width='34'/%3E%3Cpath d='M-20 240 Q70 205 125 228 T250 210 T390 223 T510 195' fill='none' stroke='%23c8c0a0' stroke-width='3'/%3E%3Cpath d='M65 -20 Q110 60 180 130 T265 320 M360 -20 Q340 80 385 140 T500 250' fill='none' stroke='%23d2c7a6' stroke-width='7'/%3E%3Cpath d='M65 -20 Q110 60 180 130 T265 320 M360 -20 Q340 80 385 140 T500 250' fill='none' stroke='%23eee5c8' stroke-width='2'/%3E%3Cg fill='%23778868' opacity='.8'%3E%3Cpath d='M25 35l18-8 12 12-10 15-19-4zM310 38l22-9 13 14-9 16-23-5zM285 245l19-11 17 10-5 18-25 3zM105 153l15-9 14 12-7 14-20-2z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23b2b99b' stroke-width='2' opacity='.8'%3E%3Cpath d='M-20 75Q45 50 95 78T200 70T300 78T500 54M-20 94Q45 69 95 97T200 89T300 97T500 73M220 0Q195 55 225 100T215 200T245 320M235 0Q210 55 240 100T230 200T260 320'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 480px 300px;
+}
+.map-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  min-height: 64px;
+  padding: 8px 0;
+  border-bottom: 1px solid #42473f;
+}
+.map-toolbar label { display: grid; gap: 5px; color: #969184; font-size: 9px; }
+.map-toolbar select { min-width: 150px; color: #d8d0bd; background: #242922; border: 1px solid #505748; padding: 8px; }
+.map-toolbar .place-picker { flex: 1; }
+.map-toolbar .place-picker select { width: 100%; }
+#mapStatus { margin: 0 0 9px auto; color: #d49a55; font-size: 9px; }
 @media (max-width: 900px) {
-  #worldMap .leaflet-control-attribution { font-size: 8px; }
+  .tile-credit { font-size: 9px; }
+  .map-toolbar { gap: 6px; }
+  .map-toolbar select { min-width: 100px; }
 }

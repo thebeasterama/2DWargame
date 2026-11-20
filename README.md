@@ -1,26 +1,22 @@
-# Iron Front — Global Command
+# Iron Front
 
-A self-contained tactical 2D browser wargame with alliances, campaign map scales, optional naval invasions, difficulty settings, and English/Spanish/French language options.
+A small browser-based tactical game with a real-world OpenStreetMap basemap and a built-in textured fallback.
 
 ## Run
 
-Open `index.html` in a browser, or serve this folder with `python3 -m http.server 8080` and visit `http://localhost:8080`.
+Open `index.html` in a browser or serve this directory (for example, `python3 -m http.server 8080`). The real-world map needs an internet connection and a browser that can load Leaflet and map tiles.
 
-## Real-world maps
+## OpenStreetMap tile usage
 
-The battlefield displays real-world OpenStreetMap tiles for selected cities, US states, countries, and world regions. Choose a map scale and theater to move the map to that location. Tiles require an internet connection and are provided by OpenStreetMap; visible attribution links to the OpenStreetMap copyright page. If the external map service or network is unavailable, the game remains playable with its tactical overlay, but the basemap may not appear.
+The default basemap uses the public `tile.openstreetmap.org` service for modest, interactive map display only. The game requests tiles for the currently visible map view; it does not bulk download, prefetch, or store tiles for offline use. Browser HTTP caching is left enabled so the browser can honor the tile server's cache headers. The application does not suppress the browser's normal User-Agent or Referer headers.
 
-## Main menu
+Visible attribution is kept above the map and game canvas as a direct, legible **© OpenStreetMap contributors** link to the copyright page. Leaflet also displays its tile-layer attribution. Tiles are not filtered or edited. The endpoint can be configured by setting `window.IRON_FRONT_TILE_URL` before `real-world-map.js` loads; use only a provider whose terms permit your usage.
 
-Choose Easy, Medium, Difficult, or Impossible before starting. Difficulty changes the number, health, damage, and attack pace of enemy units. Choose English, Spanish, or French in the menu or from the in-game language selector; the preference is saved in the browser.
-
-## Campaign setup
-
-Choose a City, State, Country, or World map scale, select a real-world theater and alliance, and optionally enable Naval invasion. Press **Deploy** to start a new battle with the selected setup.
+The standard OSM tile service has limited capacity, no uptime guarantee, and may block unsuitable or heavy use. For high-volume, commercial, or production deployments, use a suitable tile provider or operate your own service in accordance with its terms. Review the current [OpenStreetMap tile usage policy](https://operations.osmfoundation.org/policies/tiles/) before deployment.
 
 ## Controls
 
 - **WASD**: Move the active unit
-- **1–3**: Select a unit
 - **Click**: Target an enemy
 - **Space**: Attack
+- Choose a map scale and location in the toolbar
